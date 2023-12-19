@@ -30,7 +30,6 @@ import hcmute.model.BranchModel;
 import hcmute.model.MilkTeaModel;
 import hcmute.service.IMilkTeaService;
 import hcmute.service.IMilkTeaTypeService;
-import hcmute.service.IStorageService;
 
 @Controller
 @RequestMapping("admin/milk-tea")
@@ -39,8 +38,6 @@ public class MilkTeaAdminController {
 	@Autowired
 	private IMilkTeaService milkTeaService;
 
-	@Autowired
-	private IStorageService storageService;
 	
 	@Autowired
 	private IMilkTeaTypeService milkTeaTypeService;
@@ -61,10 +58,14 @@ public class MilkTeaAdminController {
 
 	@PostMapping("saveOrUpdate")
 	public ModelAndView saveOrUpdate(ModelMap model, @Valid @ModelAttribute("milkTea") MilkTeaModel milkTea,
-			BindingResult result,@RequestParam("imageFile") MultipartFile imageFile) {
+			BindingResult result) {
 		
 		if (milkTea != null) {
 			MilkTeaEntity entity = new MilkTeaEntity();
+			Optional<MilkTeaEntity> optt = milkTeaService.findById(milkTea.getIdMilkTea());
+			if(optt.isPresent()) {
+				entity = optt.get();
+			}
 			if (milkTea.getName() != null) {
 				entity.setName(milkTea.getName());
 			}
@@ -77,12 +78,6 @@ public class MilkTeaAdminController {
 			}
 			Optional<MilkTeaTypeEntity> opt = milkTeaTypeService.findById(milkTea.getMilkTeaTypeId());
 			entity.setMilkTeaTypeByMilkTea(opt.get());
-			if(!milkTea.getImageFile().isEmpty()) {
-				UUID uuid = UUID.randomUUID();
-				String uuString = uuid.toString();
-				entity.setImage(storageService.getStorageFilename(milkTea.getImageFile(), uuString));
-				storageService.store(milkTea.getImageFile(), entity.getImage());
-			}
 			milkTeaService.save(entity);
 			String message = milkTea.getIsEdit() ? "milkTea đã được cập nhật thành công"
 					: "milkTea đã được thêm thành công";
@@ -93,13 +88,6 @@ public class MilkTeaAdminController {
 		return new ModelAndView("redirect:/admin/milk-tea", model);
 	}
 
-	@GetMapping("/image/{filename:.+}")
-	public ResponseEntity<Resource> serverFile(@PathVariable String filename) {
-		Resource file = storageService.loadAsResource(filename);
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + file.getFilename() + "\"")
-				.body(file);
-	}
 	@GetMapping("edit/{idBranch}")
 	public ModelAndView edit(ModelMap model, @PathVariable("idBranch") int idBranch) {
 		Optional<MilkTeaEntity> opt = milkTeaService.findById(idBranch);
@@ -108,7 +96,8 @@ public class MilkTeaAdminController {
 			MilkTeaEntity entity = opt.get();
 			BeanUtils.copyProperties(entity, milkTea);
 			milkTea.setIsEdit(true);
-			model.addAttribute("milk", milkTea);
+			milkTea.setMilkTeaTypeId(entity.getMilkTeaTypeByMilkTea().getIdType());
+			model.addAttribute("milkTea", milkTea);
 			return new ModelAndView("admin/customize/customize-milk-tea", model);
 		}
 

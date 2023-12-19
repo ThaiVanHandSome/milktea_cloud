@@ -14,9 +14,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Embeddable
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class OrderDetailId implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

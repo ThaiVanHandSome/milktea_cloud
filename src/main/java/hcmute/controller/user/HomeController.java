@@ -27,12 +27,10 @@ import hcmute.entity.UserEntity;
 import hcmute.model.MilkTeaModel;
 import hcmute.service.ICartDetailService;
 import hcmute.service.IMilkTeaService;
-import hcmute.service.IStorageService;
 import hcmute.service.IUserService;
 import hcmute.service.impl.SessionServiceImpl;
 
 @Controller
-@SessionAttributes("user")
 public class HomeController {
 	@Autowired
 	IMilkTeaService milkTeaService;
@@ -42,9 +40,7 @@ public class HomeController {
     ICartDetailService cartDetailService;
 	@Autowired
 	SessionServiceImpl sessionService;
-	@Autowired
-	private IStorageService storageService;
-	@GetMapping("home")
+	@GetMapping(value = "home", produces = "text/css")
 	public String LoadData(ModelMap model, HttpSession session) {
 		List<MilkTeaEntity> list1 = milkTeaService.findFiveProductOutstanding();
 		model.addAttribute("list1", list1);
@@ -91,13 +87,5 @@ public class HomeController {
 		
 		model.addAttribute("message", "Sản phẩm này không tồn tại");
 		return new ModelAndView("user/error", model);
-	}
-    
-    @GetMapping("home/image/{filename:.+}")
-	public ResponseEntity<Resource> serverFile(@PathVariable String filename) {
-		Resource file = storageService.loadAsResource(filename);
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + file.getFilename() + "\"")
-				.body(file);
 	}
 }
