@@ -11,13 +11,12 @@
 	</parent>
 	<groupId>hcmute</groupId>
 	<artifactId>project</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<version>1.0</version>
+<!--	<packaging>war</packaging>-->
 	<name>project</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
-		<start-class>hcmute.ProjectApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -120,7 +119,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.31</version>
+			<version>8.0.33</version>
 		</dependency>
 
 		<dependency>
@@ -152,6 +151,25 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.10.1</version> <!-- Use a valid version -->
+				<configuration>
+					<source>1.8</source> <!-- Set the source Java version -->
+					<target>1.8</target> <!-- Set the target Java version -->
+				</configuration>
+			</plugin>
+<!--			triển khai và quản lý ứng dụng trên Google App Engine.-->
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>appengine-maven-plugin</artifactId>
+				<version>2.4.4</version>
+				<configuration>
+					<version>1</version>
+					<projectId>GCLOUD_CONFIG</projectId>
 				</configuration>
 			</plugin>
 		</plugins>
