@@ -96,118 +96,11 @@ paymentBtn.addEventListener('click', function() {
 	myAnchor.click();
 })
 
-/*google map*/
-function callPlacesAPI(query) {
-	const url = `http://localhost:8989/api/places?query=${query}`;
-	return new Promise((resolve, reject) => {
-		fetch(url)
-			.then(response => {
-				if (!response.ok) {
-					throw new Error('Network response was not ok.');
-				}
-				return response.json();
-			})
-			.then(data => {
-				resolve(data);
-			})
-			.catch(error => {
-				reject(error);
-			});
-	});
-}
-
 function addPlace(value) {
 	address.value = value;
 	placeResult.innerHTML = '';
 }
 
-const getListPlace = async (query) => {
-	const places = await callPlacesAPI(query);
-	let listPlaces = places.results;
-	if (listPlaces.length > 6) {
-		listPlaces = listPlaces.slice(0, 5);
-	}
-	const liElements = listPlaces.reduce((html, place, index) => {
-		html += `<li class="places-result-item" onclick="addPlace('${place.formatted_address}')">${place.formatted_address}</li>`;
-		return html;
-	}, '');
-	placeResult.innerHTML = liElements;
-}
-
-address.addEventListener("keyup", function() {
-	clearTimeout(timeoutId);
-	timeoutId = setTimeout(() => {
-		getListPlace(address.value);
-		listPlaceItem = document.querySelectorAll('.places-result-item');
-	}, 300);
-})
-
-/*Calculate Ship Price*/
-function callShipPriceAPI(origins, destinations, units) {
-	const url = `http://localhost:8989/api/calculateDistance?origins=${origins}&destinations=${destinations}&units=${units}`;
-	return new Promise((resolve, reject) => {
-		fetch(url)
-			.then(response => {
-				if (!response.ok) {
-					throw new Error('Network response was not ok.');
-				}
-				return response.json();
-			})
-			.then(data => {
-				console.log(data);
-				resolve(data);
-			})
-			.catch(error => {
-				reject(error);
-			});
-	});
-}
-
-function calculateShipPriceBaseOnDistance(distance) {
-	const matchResult = distance.match(/^\d+(\.\d+)?/);
-	let distanceNumber = 10000;
-	if (matchResult) {
-		distanceNumber = parseFloat(matchResult[0]);
-		distanceNumber = parseInt(distanceNumber * 2);
-		distanceNumber *= 1000;
-	}
-	return distanceNumber;
-}
-
-function calculateShipDayBaseOnDistance(duration) {
-	const matchResult = duration.match(/^\d+(\.\d+)?/);
-	let futureDate = currentDate;
-	if (matchResult) {
-		let time = parseFloat(matchResult[0]);
-		time = time * 60 * 1000;
-		futureDate = new Date(currentDate.getTime() + time);
-	}
-	return convertToDateTime(futureDate);
-}
-
-const getDataOfAPI = async (destination) => {
-	const data = await callShipPriceAPI(address.value, destination, "DRIVER");
-	return data.rows[0].elements[0];
-}
-
-const calculateAllShipPrice = () => {
-	listBranchAddress.forEach(async (address, index) => {
-		const dataObj = await getDataOfAPI(address.textContent);
-		const feeVal = calculateShipPriceBaseOnDistance(dataObj.distance.text);
-		listFee[index].textContent = feeVal + "đ";
-		if (listRadioBranch[index].checked) {
-			fee.textContent = feeVal + "đ";
-			finalPrice.textContent = feeVal + convertToVal(price.textContent) + "đ";
-			shipDay.textContent = calculateShipDayBaseOnDistance(dataObj.duration.text);
-		}
-	})
-}
-
-address.addEventListener('blur', function() {
-	setTimeout(() => {
-		calculateAllShipPrice();
-	}, 500);
-})
 
 listRadioBranch.forEach((radio, index) => {
 	radio.addEventListener('change', async () => {
@@ -215,8 +108,6 @@ listRadioBranch.forEach((radio, index) => {
 			fee.textContent = listFee[index].textContent;
 			finalPrice.textContent = convertToVal(listFee[index].textContent) + convertToVal(price.textContent) + "đ";
 			shipAddress = listBranchAddress[index].textContent;
-			const dataObj = await getDataOfAPI(shipAddress);
-			shipDay.textContent = calculateShipDayBaseOnDistance(dataObj.duration.text);
 		}
 	});
 });

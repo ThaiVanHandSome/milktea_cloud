@@ -11,12 +11,13 @@
 	</parent>
 	<groupId>hcmute</groupId>
 	<artifactId>project</artifactId>
-	<version>1.0</version>
-<!--	<packaging>war</packaging>-->
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>project</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
+		<start-class>hcmute.ProjectApplication</start-class>
 	</properties>
 	<dependencies>
 		<dependency>

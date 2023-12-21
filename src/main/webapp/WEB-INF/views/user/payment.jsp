@@ -72,7 +72,7 @@
 															style="margin-bottom: 6px">${branch.addressDetail }</p>
 														<p class="m-0 branch-fee" style="font-size: 20px;">
 															Phí giao hàng: <span
-																class="branch-fee-val bold-text text-danger">0đ</span>
+																class="branch-fee-val bold-text text-danger">20000đ</span>
 														</p>
 													</div>
 												</div>
@@ -168,7 +168,7 @@
 							</li>
 							<li>
 								<p>Phí giao hàng</p>
-								<p class="payment-fee payment-price-value">0đ</p>
+								<p class="payment-fee payment-price-value">20000đ</p>
 							</li>
 							<li>
 								<p>Thành tiền</p>
